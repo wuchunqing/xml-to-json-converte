@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XML to JSON Converter — Free Online, Pretty Print &amp; Attributes</title>
+  <meta name="description" content="Free XML to JSON converter online. Map elements, @attributes, #text, CDATA and repeated tags to clean JSON. Pretty or minify — inspired by FreeFormatter, OpenFormatter &amp; ConvertJSON. Runs in your browser.">
+  <meta name="google-site-verification" content="uz_j2c_UOuyTXyW6W87egnN8gHCyfSqm3kyY_XEx62w" />
+  <meta name="theme-color" content="#E11D48">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --primary:#E11D48;--primary-dark:#BE123C;--primary-light:#FFE4E6;
+      --accent:#F43F5E;--ink:#9F1239;--muted:#64748B;--line:#E2E8F0;
+      --bg:#FFF1F2;--card:#fff;--radius:16px;
+      --shadow:0 8px 32px rgba(225,29,72,.08);
+      --ok:#059669;--warn:#D97706;--code:#0F172A;
+    }
+    body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:#1E293B;line-height:1.65;font-size:15px}
+    .container{max-width:1080px;margin:0 auto;padding:0 20px}
+    header{background:#fff;border-bottom:1px solid var(--line);padding:16px 0;position:sticky;top:0;z-index:50}
+    .logo{font-size:20px;font-weight:800;color:var(--primary);text-decoration:none}
+    .hero{padding:36px 0 22px;text-align:center;background:linear-gradient(165deg,#FFE4E6,#FECDD3 50%,#FFF1F2)}
+    .hero-badge{display:inline-block;background:var(--primary-light);color:var(--primary-dark);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;border-radius:999px;margin-bottom:12px}
+    .hero h1{font-size:clamp(26px,4vw,38px);font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.02em}
+    .hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:15px}
+    .metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px}
+    .metric-pill{padding:8px 14px;background:#fff;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:700;color:var(--ink)}
+    .metric-pill span{color:var(--primary)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start;margin:28px 0}
+    #tool-panel{min-width:0;position:relative;z-index:30}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px;position:relative;z-index:30;display:flex;flex-direction:column;gap:14px;isolation:isolate}
+    .card h2{font-size:18px;font-weight:800;color:var(--ink);margin:0}
+    .card .sub{font-size:13px;color:var(--muted);margin:0}
+    .sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary-dark);margin:2px 0 0}
+    .opt-row{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:40}
+    .opt-btn{padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);pointer-events:auto;position:relative;z-index:40}
+    .opt-btn.active,.opt-btn:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+    .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+    .check{display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;line-height:1.4}
+    .check input{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--primary)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .field input{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:14px;font-weight:600;background:#fff}
+    .field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(225,29,72,.12)}
+    .editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .editor-col label{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+    .editor{width:100%;min-height:300px;padding:14px;border:1.5px solid var(--line);border-radius:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;resize:vertical;background:#fff;color:var(--code);position:relative;z-index:40}
+    .editor:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(225,29,72,.12)}
+    .editor.out{background:#FFF1F2}
+    .hint{font-size:12px;color:var(--muted);padding:11px 12px;background:#F8FAFC;border-radius:10px;border-left:3px solid var(--accent);margin:0}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:40}
+    .btn-main,.btn-ghost{position:relative;z-index:40;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;appearance:none;pointer-events:auto}
+    .btn-main{flex:1;min-width:120px;padding:14px 18px;background:linear-gradient(135deg,#F43F5E,#E11D48);color:#fff;border:none;border-radius:11px;font:inherit;font-size:15px;font-weight:800}
+    .btn-ghost{padding:14px 16px;border:1.5px solid var(--line);border-radius:11px;background:#fff;font:inherit;font-size:13px;font-weight:700;color:var(--muted)}
+    .btn-ghost.ok{border-color:#FECDD3;background:#FFF1F2;color:var(--primary-dark)}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .stat{background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+    .stat .k{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .stat .v{font-size:14px;font-weight:800;color:var(--primary-dark);font-variant-numeric:tabular-nums}
+    .stat.accent{background:linear-gradient(145deg,#F43F5E,#E11D48);border:none;color:#fff}
+    .stat.accent .k{color:rgba(255,255,255,.85)}
+    .stat.accent .v{color:#fff}
+    .status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;font-weight:600}
+    .status.show{display:block}
+    .status.ok{background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46}
+    .status.err{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+    .status.info{background:var(--primary-light);border:1px solid #FECDD3;color:var(--primary-dark)}
+    .tip-box,.note-box{padding:12px;border-radius:10px;font-size:12px;line-height:1.6;margin:0}
+    .tip-box{background:var(--primary-light);border:1px solid #FECDD3;color:var(--primary-dark)}
+    .note-box{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+    .sidebar{display:flex;flex-direction:column;gap:14px}
+    .sidebar-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+    .sidebar-card h3{font-size:14px;font-weight:800;margin-bottom:10px}
+    .ref-table{width:100%;font-size:12px;border-collapse:collapse}
+    .ref-table td{padding:6px 0;border-bottom:1px dashed var(--line)}
+    .ref-table td:last-child{text-align:right;font-weight:700}
+    .sidebar-list{list-style:none;font-size:12px;color:var(--muted);line-height:1.9}
+    .guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+    .guide-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+    .guide-card h2{font-size:16px;font-weight:800;margin-bottom:8px}
+    .guide-card p,.guide-card li{font-size:14px;color:var(--muted)}
+    .guide-card ul{padding-left:18px;margin-top:6px}
+    .formula-box{background:#0F172A;color:#E2E8F0;border-radius:10px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;margin:12px 0;overflow:auto}
+    .content-block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:0 0 20px}
+    .content-block h2{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:8px}
+    .content-block p,.content-block li{font-size:14px;color:var(--muted)}
+    .content-block ul{padding-left:18px;margin-top:8px}
+    .content-block li{margin-bottom:4px}
+    .steps{display:grid;gap:10px;margin-top:10px}
+    .step{display:flex;gap:12px;padding:12px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;font-size:13px;color:var(--muted)}
+    .step b{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;flex-shrink:0}
+    details{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+    details[open]{border-color:var(--primary)}
+    summary{padding:13px 16px;font-weight:700;cursor:pointer;list-style:none;font-size:14px}
+    summary::-webkit-details-marker{display:none}
+    details p{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.65}
+    footer{text-align:center;padding:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);background:#fff;margin-top:20px}
+    .ad-top,.ad-sidebar,.ad-bottom,.ad-mid{display:flex;justify-content:center;align-items:center;margin:16px auto;overflow:hidden;min-height:50px;background:transparent;position:relative;z-index:0}
+    .ad-top{width:100%;max-width:728px;min-height:90px}
+    .ad-mid{width:100%;max-width:728px;min-height:90px;margin:8px auto 24px}
+    .ad-sidebar{width:100%;max-width:300px;min-height:250px;border-radius:var(--radius)}
+    .ad-bottom{width:100%;max-width:320px;min-height:50px}
+    .sec-title{font-size:18px;font-weight:800;margin-bottom:12px;color:var(--ink)}
+    .more-tools{margin:28px 0 8px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:16px}
+    .more-tools h2{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:12px}
+    .more-tools .links{display:flex;flex-wrap:wrap;gap:8px}
+    .more-tools a{font-size:12px;font-weight:700;color:var(--primary-dark);text-decoration:none;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+    .more-tools a:hover{border-color:var(--primary);background:var(--primary-light)}
+    @media(max-width:860px){
+      .layout,.editor-grid,.guide-grid,.checks,.field-row,.stat-grid{grid-template-columns:1fr}
+      .stat-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container"><a href="../" class="logo">XML to JSON Converter</a></div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <span class="hero-badge">Attributes · Arrays · Pretty / Minify · Private</span>
+    <h1>XML to JSON Converter</h1>
+    <p>Convert well-formed XML into clean JSON with <code>@</code> attributes, <code>#text</code> nodes, CDATA and automatic arrays for repeated tags — inspired by FreeFormatter, OpenFormatter &amp; ConvertJSON. Everything runs in your browser.</p>
+    <div class="metrics">
+      <div class="metric-pill"><span>@attr</span> + #text</div>
+      <div class="metric-pill"><span>Arrays</span> auto-detect</div>
+      <div class="metric-pill"><span>Privacy</span> no upload</div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="ad-top">
+    <script>
+      atOptions = {
+        'key' : 'b31a21d357a574f5abfe948e08497cc3',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highperformanceformat.com/b31a21d357a574f5abfe948e08497cc3/invoke.js"></script>
+    <!-- 顶部广告脚本（加了属性） -->
+    <script data-cfasync="false" src="https://adsterra-xxx1.js"></script>
+  </div>
+</div>
+
+<div class="container">
+  <div class="layout">
+    <main class="card" id="tool-panel">
+      <h2>Convert XML to JSON</h2>
+      <p class="sub">Paste XML on the left. Tune attribute / text keys and indent, then convert. Invalid XML shows a clear parse error.</p>
+
+      <div class="sec-label">JSON indent</div>
+      <div class="opt-row" id="indentRow">
+        <button type="button" class="opt-btn active" data-indent="2">2 spaces</button>
+        <button type="button" class="opt-btn" data-indent="4">4 spaces</button>
+        <button type="button" class="opt-btn" data-indent="0">Minify</button>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="attrPrefix">Attribute prefix</label>
+          <input type="text" id="attrPrefix" value="@" maxlength="8" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="textKey">Text node key</label>
+          <input type="text" id="textKey" value="#text" maxlength="24" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="sec-label">Options</div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="optArrays" checked> Auto-array repeated siblings</label>
+        <label class="check"><input type="checkbox" id="optCoerce" checked> Coerce text to number / boolean / null</label>
+        <label class="check"><input type="checkbox" id="optTrim" checked> Trim text nodes</label>
+        <label class="check"><input type="checkbox" id="optStripNs"> Strip XML namespace prefixes</label>
+      </div>
+
+      <div class="editor-grid">
+        <div class="editor-col">
+          <label for="xmlIn"><span>XML input</span><span id="xmlMeta">0 chars</span></label>
+          <textarea class="editor" id="xmlIn" spellcheck="false" placeholder="Paste XML here…"></textarea>
+        </div>
+        <div class="editor-col">
+          <label for="jsonOut"><span>JSON output</span><span id="jsonMeta">—</span></label>
+          <textarea class="editor out" id="jsonOut" spellcheck="false" readonly placeholder="JSON appears here…"></textarea>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat accent"><div class="k">Status</div><div class="v" id="statStatus">Ready</div></div>
+        <div class="stat"><div class="k">XML size</div><div class="v" id="statXml">0 B</div></div>
+        <div class="stat"><div class="k">JSON size</div><div class="v" id="statJson">—</div></div>
+        <div class="stat"><div class="k">Keys / arrays</div><div class="v" id="statShape">—</div></div>
+      </div>
+
+      <p class="hint">FreeFormatter-style mapping: attributes stay strings as <strong>@name</strong>; character data uses <strong>#text</strong> when mixed with children; identical sibling tags become JSON arrays. Empty tags become <code>""</code>.</p>
+
+      <div class="btn-row">
+        <button type="button" class="btn-main" id="btnConvert">Convert to JSON</button>
+        <button type="button" class="btn-ghost" id="btnSample">Load sample</button>
+        <button type="button" class="btn-ghost" id="btnCopy" disabled>Copy JSON</button>
+        <button type="button" class="btn-ghost" id="btnDownload" disabled>Download .json</button>
+        <button type="button" class="btn-ghost" id="btnClear">Clear</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <h3>Mapping cheatsheet</h3>
+        <table class="ref-table">
+          <tr><td>Element</td><td>object key</td></tr>
+          <tr><td>Attribute</td><td>@attr</td></tr>
+          <tr><td>Text / CDATA</td><td>#text</td></tr>
+          <tr><td>Repeated tags</td><td>[ … ]</td></tr>
+          <tr><td>Empty element</td><td>"" / {}</td></tr>
+        </table>
+      </div>
+      <div class="sidebar-card">
+        <h3>Good for</h3>
+        <ul class="sidebar-list">
+          <li>· SOAP → REST payloads</li>
+          <li>· RSS / Atom feeds</li>
+          <li>· Config &amp; pom.xml snippets</li>
+          <li>· API fixtures &amp; mocks</li>
+          <li>· Quick shape inspection</li>
+        </ul>
+      </div>
+      <div class="sidebar-card">
+        <h3>Tips</h3>
+        <ul class="sidebar-list">
+          <li>· XML must be well-formed</li>
+          <li>· One root element required</li>
+          <li>· Prefer minify for wire size</li>
+          <li>· Keep @ / #text stable in code</li>
+        </ul>
+      </div>
+      <div class="ad-sidebar">
+        <script>
+          atOptions = {
+            'key' : '5b2625d96c11d7b599cea160717bc0f6',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+          };
+        </script>
+        <script src="https://www.highperformanceformat.com/5b2625d96c11d7b599cea160717bc0f6/invoke.js"></script>
+      </div>
+    </aside>
+  </div>
+
+  <section class="guide-grid">
+    <div class="guide-card">
+      <h2>How conversion works</h2>
+      <p>The browser <strong>DOMParser</strong> builds an XML tree. We walk each element, map attributes with your prefix, fold text/CDATA, and emit arrays when the same tag repeats.</p>
+      <div class="formula-box">&lt;user id="1"&gt;Ada&lt;/user&gt;<br>→ {"user":{"@id":"1","#text":"Ada"}}</div>
+    </div>
+    <div class="guide-card">
+      <h2>Why @ and #text?</h2>
+      <ul>
+        <li>Avoids collisions with child names</li>
+        <li>Used by FreeFormatter-style tools</li>
+        <li>Easy to round-trip later</li>
+        <li>Clear for mixed content</li>
+        <li>Stable for unit tests</li>
+      </ul>
+    </div>
+    <div class="guide-card">
+      <h2>XML vs JSON</h2>
+      <ul>
+        <li>XML: attributes + mixed content</li>
+        <li>JSON: objects / arrays / scalars</li>
+        <li>Use JSON for REST &amp; JS apps</li>
+        <li>Keep XML for SOAP / XSD</li>
+        <li>This tool is one-way (XML→JSON)</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="ad-mid">
+    <!-- 文中广告脚本（加了属性） -->
+    <script data-cfasync="false" src="https://adsterra-xxx2.js"></script>
+  </div>
+
+  <div class="content-block">
+    <h2>How to use the XML to JSON converter</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><span>Paste XML (or click <strong>Load sample</strong>). Optionally set attribute prefix and text key.</span></div>
+      <div class="step"><b>2</b><span>Choose indent (2 / 4 / minify) and toggles such as array detection or type coercion.</span></div>
+      <div class="step"><b>3</b><span>Click <strong>Convert to JSON</strong> — output appears on the right with size stats.</span></div>
+      <div class="step"><b>4</b><span>Copy or download the <code>.json</code> file. Nothing is uploaded.</span></div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h2>Attribute &amp; text mapping</h2>
+    <p>XML attributes have no direct JSON twin. By default they become properties like <strong>@id</strong> so they never clash with a child element named <code>id</code>. When an element has both children and text, the text is stored under <strong>#text</strong> (configurable). Pure-text elements usually collapse to a plain string for cleaner output — the same approach used by FreeFormatter and OpenFormatter-style converters.</p>
+  </div>
+
+  <div class="content-block">
+    <h2>Arrays, CDATA &amp; namespaces</h2>
+    <ul>
+      <li><strong>Repeated siblings</strong> (e.g. multiple <code>&lt;item&gt;</code>) become a JSON array when auto-array is on.</li>
+      <li><strong>CDATA</strong> is treated as text content (quotes and markup stay literal).</li>
+      <li><strong>Namespaces</strong> are kept in the tag name by default (<code>dc:title</code>). Enable “Strip XML namespace prefixes” if you want bare local names.</li>
+      <li><strong>Comments</strong> and processing instructions are ignored.</li>
+    </ul>
+  </div>
+
+  <div class="content-block">
+    <h2>Privacy</h2>
+    <p>Parsing and conversion run entirely with the browser’s DOMParser and JavaScript. Your XML never leaves the device — ideal for internal configs, customer payloads, and API samples.</p>
+  </div>
+
+  <h2 class="sec-title">FAQ</h2>
+  <details>
+    <summary>Why did conversion fail?</summary>
+    <p>XML must be well-formed: a single root, matching end tags, and properly escaped <code>&amp; &lt; &gt;</code>. The status line shows the DOMParser error message when parsing fails.</p>
+  </details>
+  <details>
+    <summary>Can I change @ and #text?</summary>
+    <p>Yes — set Attribute prefix and Text node key before converting. Keep them consistent with whatever your application already expects.</p>
+  </details>
+  <details>
+    <summary>Do numbers stay as strings?</summary>
+    <p>With “Coerce numbers / booleans / null” enabled, values like <code>42</code>, <code>true</code>, and <code>null</code> become JSON number / boolean / null. Turn it off to keep every text value as a string.</p>
+  </details>
+  <details>
+    <summary>Is this bidirectional?</summary>
+    <p>This page focuses on XML → JSON. Going back to XML needs a separate mapping (and often loses order/comments). Use a dedicated JSON→XML tool if you need the reverse.</p>
+  </details>
+  <details>
+    <summary>Is my data uploaded?</summary>
+    <p>No. Conversion is 100% client-side. Closing the tab clears the editors.</p>
+  </details>
+</div>
+
+<div class="container">
+  <div class="ad-bottom">
+    <script>
+      atOptions = {
+        'key' : '5a3667e1a909df26029e97d7d01cf2b5',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highperformanceformat.com/5a3667e1a909df26029e97d7d01cf2b5/invoke.js"></script>
+    <!-- 底部广告脚本（加了属性） -->
+    <script data-cfasync="false" src="https://adsterra-xxx3.js"></script>
+  </div>
+</div>
+
+<div class="container">
+  <div class="more-tools">
+    <h2>More tools on QuickCalc Hub</h2>
+    <div class="links">
+      <a href="../ns-86/">HTML Beautifier</a>
+      <a href="../ns-89/">Word Character Counter</a>
+      <a href="../ns-92/">Port Checker Tool</a>
+      <a href="../ns-39/">Epoch Converter</a>
+      <a href="../">All tools</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">XML to JSON Converter — client-side mapping inspired by FreeFormatter, OpenFormatter &amp; ConvertJSON. Your data stays in the browser.</div>
+</footer>
+
+<script>
+(function(){
+  var indent=2;
+  var lastJson='';
+
+  var SAMPLE='<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<catalog>\n'+
+    '  <book id="bk101" available="true">\n'+
+    '    <author>Gambardella, Matthew</author>\n'+
+    '    <title>XML Developer\'s Guide</title>\n'+
+    '    <genre>Computer</genre>\n'+
+    '    <price>44.95</price>\n'+
+    '    <publish_date>2000-10-01</publish_date>\n'+
+    '    <description><![CDATA[An in-depth look at creating applications with XML.]]></description>\n'+
+    '  </book>\n'+
+    '  <book id="bk102" available="false">\n'+
+    '    <author>Ralls, Kim</author>\n'+
+    '    <title>Midnight Rain</title>\n'+
+    '    <genre>Fantasy</genre>\n'+
+    '    <price>5.95</price>\n'+
+    '    <tags>\n'+
+    '      <tag>bestseller</tag>\n'+
+    '      <tag>hardcover</tag>\n'+
+    '    </tags>\n'+
+    '  </book>\n'+
+    '</catalog>';
+
+  function byId(id){ return document.getElementById(id); }
+
+  function setStatus(type,msg){
+    var el=byId('status');
+    el.className='status show '+(type||'info');
+    el.textContent=msg;
+  }
+  function clearStatus(){
+    var el=byId('status');
+    el.className='status';
+    el.textContent='';
+  }
+
+  function fmtBytes(n){
+    if(n<1024) return n+' B';
+    if(n<1024*1024) return (n/1024).toFixed(1)+' KB';
+    return (n/1024/1024).toFixed(2)+' MB';
+  }
+
+  function updateXmlMeta(){
+    var t=byId('xmlIn').value||'';
+    byId('xmlMeta').textContent=t.length.toLocaleString()+' chars';
+    byId('statXml').textContent=fmtBytes(new Blob([t]).size);
+  }
+
+  function setOutputEnabled(on){
+    byId('btnCopy').disabled=!on;
+    byId('btnDownload').disabled=!on;
+  }
+
+  function coerceValue(s){
+    if(s==='true') return true;
+    if(s==='false') return false;
+    if(s==='null') return null;
+    /* Keep leading zeros / plus signs as strings (IDs, codes) */
+    if(/^[+-]?0\d/.test(s)) return s;
+    if(/^-?\d+$/.test(s)){
+      var n=Number(s);
+      if(String(n)===s && Math.abs(n)<=Number.MAX_SAFE_INTEGER) return n;
+    }
+    if(/^-?(?:0|[1-9]\d*)\.\d+$/.test(s)){
+      var f=Number(s);
+      if(!isNaN(f) && isFinite(f)) return f;
+    }
+    return s;
+  }
+
+  function localName(name, stripNs){
+    if(!stripNs) return name;
+    var i=name.indexOf(':');
+    return i>=0?name.slice(i+1):name;
+  }
+
+  function nodeNameOf(el, stripNs){
+    return localName(el.nodeName, stripNs);
+  }
+
+  /**
+   * FreeFormatter / OpenFormatter-style mapping:
+   * - attributes → "@name" (always strings)
+   * - pure text element → string (optionally coerced)
+   * - attrs + text → { "@…":…, "#text":… }
+   * - repeated sibling tags → array (when enabled)
+   * - empty element → ""
+   */
+  function xmlElementToJson(el, opts){
+    var obj={};
+    var hasAttr=false;
+    if(el.attributes && el.attributes.length){
+      for(var i=0;i<el.attributes.length;i++){
+        var a=el.attributes[i];
+        if(a.name==='xmlns' || a.name.indexOf('xmlns:')===0) continue;
+        /* Attributes stay strings — matches FreeFormatter */
+        obj[opts.attrPrefix+localName(a.name,opts.stripNs)] = a.value;
+        hasAttr=true;
+      }
+    }
+
+    var kids=[];
+    var texts=[];
+    for(var c=el.firstChild;c;c=c.nextSibling){
+      if(c.nodeType===1) kids.push(c);
+      else if(c.nodeType===3 || c.nodeType===4){
+        var tx=c.nodeValue||'';
+        if(opts.trim) tx=tx.trim(); /* trim ends only — keep internal spaces */
+        if(tx) texts.push(tx);
+      }
+    }
+    var textJoined=texts.join(opts.trim?' ':'');
+
+    if(!kids.length){
+      if(!hasAttr){
+        if(!textJoined) return '';
+        return opts.coerce?coerceValue(textJoined):textJoined;
+      }
+      if(textJoined) obj[opts.textKey]=opts.coerce?coerceValue(textJoined):textJoined;
+      return obj;
+    }
+
+    var groups={};
+    kids.forEach(function(child){
+      var key=nodeNameOf(child,opts.stripNs);
+      var val=xmlElementToJson(child,opts);
+      if(!Object.prototype.hasOwnProperty.call(groups,key)) groups[key]=[];
+      groups[key].push(val);
+    });
+
+    Object.keys(groups).forEach(function(key){
+      var arr=groups[key];
+      if(opts.arrays && arr.length>1) obj[key]=arr;
+      else obj[key]=arr.length===1?arr[0]:arr; /* still array if repeats when toggle off — avoid data loss */
+    });
+
+    if(textJoined) obj[opts.textKey]=opts.coerce?coerceValue(textJoined):textJoined;
+    return obj;
+  }
+
+  function xmlToJson(xmlText, opts){
+    var parser=new DOMParser();
+    var doc=parser.parseFromString(xmlText,'application/xml');
+    var err=doc.querySelector('parsererror');
+    if(err){
+      var msg=(err.textContent||'Invalid XML').replace(/\s+/g,' ').trim();
+      throw new Error(msg.slice(0,220));
+    }
+    var root=doc.documentElement;
+    if(!root) throw new Error('No root element found.');
+    var out={};
+    out[nodeNameOf(root,opts.stripNs)]=xmlElementToJson(root,opts);
+    return out;
+  }
+
+  function countShape(v, acc){
+    acc=acc||{keys:0,arrays:0};
+    if(Array.isArray(v)){
+      acc.arrays++;
+      v.forEach(function(x){ countShape(x,acc); });
+    } else if(v && typeof v==='object'){
+      Object.keys(v).forEach(function(k){
+        acc.keys++;
+        countShape(v[k],acc);
+      });
+    }
+    return acc;
+  }
+
+  function convert(){
+    clearStatus();
+    var xml=byId('xmlIn').value||'';
+    if(!xml.trim()){
+      setStatus('err','Paste XML first (or load the sample).');
+      byId('statStatus').textContent='Empty';
+      return;
+    }
+    var opts={
+      attrPrefix:byId('attrPrefix').value||'@',
+      textKey:byId('textKey').value||'#text',
+      arrays:byId('optArrays').checked,
+      coerce:byId('optCoerce').checked,
+      trim:byId('optTrim').checked,
+      stripNs:byId('optStripNs').checked
+    };
+    try{
+      var data=xmlToJson(xml,opts);
+      var space=indent===0?0:indent;
+      lastJson=JSON.stringify(data,null,space);
+      byId('jsonOut').value=lastJson;
+      byId('jsonMeta').textContent=lastJson.length.toLocaleString()+' chars';
+      byId('statJson').textContent=fmtBytes(new Blob([lastJson]).size);
+      var shape=countShape(data);
+      byId('statShape').textContent=shape.keys+' / '+shape.arrays;
+      byId('statStatus').textContent='OK';
+      setOutputEnabled(true);
+      setStatus('ok','Converted successfully — '+(indent===0?'minified':'pretty '+indent+'-space')+' JSON.');
+    }catch(e){
+      lastJson='';
+      byId('jsonOut').value='';
+      byId('jsonMeta').textContent='—';
+      byId('statJson').textContent='—';
+      byId('statShape').textContent='—';
+      byId('statStatus').textContent='Error';
+      setOutputEnabled(false);
+      setStatus('err','Convert failed: '+(e&&e.message?e.message:'invalid XML'));
+    }
+  }
+
+  byId('indentRow').addEventListener('click',function(e){
+    var btn=e.target.closest('[data-indent]');
+    if(!btn) return;
+    indent=btn.getAttribute('data-indent')==='0'?0:parseInt(btn.getAttribute('data-indent'),10);
+    document.querySelectorAll('#indentRow .opt-btn').forEach(function(b){
+      b.classList.toggle('active', b===btn);
+    });
+    if(lastJson){
+      try{
+        var obj=JSON.parse(lastJson);
+        lastJson=JSON.stringify(obj,null,indent===0?0:indent);
+        byId('jsonOut').value=lastJson;
+        byId('jsonMeta').textContent=lastJson.length.toLocaleString()+' chars';
+        byId('statJson').textContent=fmtBytes(new Blob([lastJson]).size);
+      }catch(err){}
+    }
+  });
+
+  byId('xmlIn').addEventListener('input',updateXmlMeta);
+
+  byId('btnConvert').addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); convert(); });
+  byId('btnSample').addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    byId('xmlIn').value=SAMPLE;
+    updateXmlMeta();
+    convert();
+  });
+  byId('btnClear').addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    byId('xmlIn').value='';
+    byId('jsonOut').value='';
+    lastJson='';
+    updateXmlMeta();
+    byId('jsonMeta').textContent='—';
+    byId('statJson').textContent='—';
+    byId('statShape').textContent='—';
+    byId('statStatus').textContent='Ready';
+    setOutputEnabled(false);
+    clearStatus();
+  });
+  byId('btnCopy').addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    if(!lastJson) return;
+    var btn=byId('btnCopy');
+    function done(){
+      btn.classList.add('ok');
+      btn.textContent='Copied!';
+      setTimeout(function(){ btn.classList.remove('ok'); btn.textContent='Copy JSON'; },1400);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastJson).then(done).catch(function(){ window.prompt('Copy:', lastJson); });
+    } else {
+      byId('jsonOut').select();
+      try{ document.execCommand('copy'); }catch(err){}
+      done();
+    }
+  });
+  byId('btnDownload').addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    if(!lastJson) return;
+    var blob=new Blob([lastJson],{type:'application/json;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='converted.json';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },500);
+  });
+
+  /* Soft shield against fixed ad overlays covering the tool */
+  setTimeout(function(){
+    var zone=byId('tool-panel');
+    if(!zone) return;
+    function softScan(){
+      var zr=zone.getBoundingClientRect();
+      Array.prototype.forEach.call(document.body.children,function(el){
+        if(!el||el.tagName==='SCRIPT'||el.tagName==='STYLE') return;
+        if(el===zone||(el.contains&&el.contains(zone))) return;
+        if(el.classList&&el.classList.contains('container')) return;
+        if(el.tagName==='HEADER'||el.tagName==='FOOTER'||(el.tagName==='SECTION'&&el.classList.contains('hero'))) return;
+        var cs=window.getComputedStyle(el);
+        if(cs.position!=='fixed'&&cs.position!=='absolute') return;
+        var r=el.getBoundingClientRect();
+        if(r.width<80||r.height<80) return;
+        var overlap=!(r.right<zr.left||r.left>zr.right||r.bottom<zr.top||r.top>zr.bottom);
+        if(overlap){
+          el.style.setProperty('pointer-events','none','important');
+          if(r.width>window.innerWidth*0.45) el.style.setProperty('visibility','hidden','important');
+        }
+      });
+    }
+    softScan();
+    setInterval(softScan,2000);
+  },800);
+
+  updateXmlMeta();
+})();
+</script>
+</body>
+</html>
